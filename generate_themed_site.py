@@ -14,19 +14,35 @@ OUTPUT_DIR = "static_site"
 
 def create_directory_listing_page(current_path, items):
     """Creates a browsable index.html for a directory with the new dark theme."""
-    folders = sorted([item for item in items if item['IsDir']], key=lambda x: x['Name'])
+    # Get all folders and files
+    all_folders = sorted([item for item in items if item['IsDir']], key=lambda x: x['Name'])
     files = sorted([item for item in items if not item['IsDir']], key=lambda x: x['Name'])
     safe_current_path = html.escape(str(current_path))
+
+    # --- NEW: De-duplicate folder entries ---
+    # This ensures that if "Photos" and "photos" both exist, only one is listed.
+    folders = []
+    seen_folder_names = set()
+    for folder in all_folders:
+        lower_name = folder['Name'].lower()
+        if lower_name not in seen_folder_names:
+            seen_folder_names.add(lower_name)
+            folders.append(folder)
+    # --- END NEW ---
 
     table_rows = ''
     if current_path != Path("."):
         table_rows += '<tr><td><a href="../">Parent Directory</a></td><td>-</td></tr>'
+    
+    # This loop now iterates over the de-duplicated 'folders' list
     for folder in folders:
-        folder_name_safe = html.escape(folder["Name"])
-        table_rows += f'<tr><td><a href="{folder_name_safe}/">{folder_name_safe}/</a></td><td class="filesize">-1</td></tr>'
+        folder_name = folder["Name"]
+        folder_name_safe = html.escape(folder_name)
+        folder_link_href = html.escape(folder_name.lower())
+        table_rows += f'<tr><td><a href="{folder_link_href}/">{folder_name_safe}/</a></td><td class="filesize">-1</td></tr>'
+
     for file in files:
         file_name_safe = html.escape(file["Name"])
-        # MODIFIED: The href now points directly to the rclone serve URL for the file.
         direct_url = f"{RCLONE_SERVE_URL.rstrip('/')}/{html.escape(file['Path'])}"
         table_rows += f'<tr><td><a href="{direct_url}">{file_name_safe}</a></td><td class="filesize">{file["Size"]}</td></tr>'
 
@@ -58,7 +74,6 @@ def main():
     """Main execution function."""
     print("Starting themed site generation...")
     try:
-        # Uses the standard 'open' to read the plain text JSON file
         with open(JSON_INPUT_FILE, 'r', encoding='utf-8') as f:
             all_items = json.load(f)
     except (IOError, FileNotFoundError, json.JSONDecodeError):
@@ -68,7 +83,7 @@ def main():
     dir_tree = {}
     for item in all_items:
         p = Path(item['Path'])
-        parent_dir = str(p.parent)
+        parent_dir = str(p.parent).lower()
         if parent_dir not in dir_tree: dir_tree[parent_dir] = []
         dir_tree[parent_dir].append(item)
 
