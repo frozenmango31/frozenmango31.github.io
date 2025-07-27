@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"><title>Directory listing of /movies/Tammy (2014)</title>
+    <style>body{font-family:monospace;padding:20px;background:#121212;color:#ffffff;}h1{margin-bottom:20px;}a{text-decoration:none;color:#4da6ff;}input{margin-bottom:10px;padding:5px;width:100%;box-sizing:border-box;background:#1e1e1e;border:1px solid #333;color:#ffffff;border-radius:4px;}table{width:100%;border-collapse:collapse;}th,td{text-align:left;padding:8px;border-bottom:1px solid #2a2a2a;}th{background:#1e1e1e;cursor:pointer;}tr:hover td{background-color:#2c2c2c;}</style>
+    <script>
+        function formatSize(bytes){if(bytes<0)return"-";if(bytes===0)return"0 B";const sizes=["B","KB","MB","GB","TB"];const i=Math.floor(Math.log(bytes)/Math.log(1024));return parseFloat((bytes/Math.pow(1024,i)).toFixed(2))+" "+sizes[i]}
+        function sortTable(n,isNumeric){let table=document.getElementById("fileTable");let rows=Array.from(table.rows).slice(1);let asc=table.dataset.sortOrder!=="asc";table.dataset.sortOrder=asc?"asc":"desc";let ascVal=asc?1:-1;rows.sort((a,b)=>{let x=a.cells[n].getAttribute('data-sort')||a.cells[n].textContent.trim().toLowerCase();let y=b.cells[n].getAttribute('data-sort')||b.cells[n].textContent.trim().toLowerCase();if(isNumeric){return(parseFloat(x)-parseFloat(y))*ascVal}return x.localeCompare(y)*ascVal});rows.forEach(row=>table.appendChild(row))}
+        function filterTable(){let input=document.getElementById("search").value.toLowerCase();document.querySelectorAll("#fileTable tr").forEach((row,index)=>{if(index===0||row.classList.contains('parent-dir'))return;let nameCell=row.cells[0].textContent.toLowerCase();row.style.display=nameCell.includes(input)?"":"none"})};
+        window.onload=function(){document.querySelectorAll(".filesize").forEach(function(td){let size=parseInt(td.textContent,10);td.setAttribute('data-sort',size);td.textContent=formatSize(size)});const parentRow=Array.from(document.querySelectorAll("#fileTable tr td a")).find(a=>a.textContent==="Parent Directory");if(parentRow)parentRow.closest('tr').classList.add('parent-dir')};
+    </script>
+</head>
+<body>
+    <h1>Index of /movies/Tammy (2014)</h1>
+    <input type="text" id="search" onkeyup="filterTable()" placeholder="Search files and folders...">
+    <table id="fileTable"><thead><tr><th onclick="sortTable(0, false)">Name</th><th onclick="sortTable(1, true)">Size</th></tr></thead><tbody><tr><td><a href="../">Parent Directory</a></td><td>-</td></tr><tr><td><a href="https://a.111477.xyz/movies/Tammy (2014)/Tammy.2014.EXTENDED.REMUX.1080p.2014.DTS-HD.MA.5.1-iFT.mkv">Tammy.2014.EXTENDED.REMUX.1080p.2014.DTS-HD.MA.5.1-iFT.mkv</a></td><td class="filesize">20277851656</td></tr></tbody></table>
+</body>
+</html>
